@@ -17,7 +17,7 @@ BACKGROUND_COLOR = "light grey"
 
 # Sizes. (to remove when sprites are implemented)
 PLAYER_HITBOX = 25
-ZOMBIE_SIZE = 32
+ZOMBIE_SIZE = 50
 BULLET_SIZE = 2
 DIAMOND_SIZE = 12
 CHEST_SIZE = 15

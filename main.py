@@ -32,24 +32,26 @@ def graphics():
         for monster in game.monsters:
             if abs(game.player.x - monster.x) < WIDTH and abs(game.player.y - monster.y) < HEIGHT:
                 # monster animation sprite choice and display
+                turn = 0
+                if monster.tag != "player":
+                    if monster.x > game.player.x: turn = 1
                 match monster.type:
                     case "zombie":
-                        img = zombieImg[monster.animation]
+                        img = zombieImg[turn][monster.animation]
                     case "skeleton":
-                        img = skeletonImg[monster.animation]
+                        img = skeletonImg[turn][monster.animation]
                     case "orc":
-                        img = orcImg[monster.animation]
+                        img = orcImg[turn][monster.animation]
                     case "pig":
-                        img = pigImg[monster.animation]
+                        img = pigImg[turn][monster.animation]
                     case "skeletonBig":
-                        img = skeletonBigImg[monster.animation]
+                        img = skeletonBigImg[turn][monster.animation]
                     case "zombieBig":
-                        img = zombieBigImg[monster.animation]
+                        img = zombieBigImg[turn][monster.animation]
                     case "orcBig":
-                        img = orcBigImg[monster.animation]
+                        img = orcBigImg[turn][monster.animation]
                     case "pigBig":
-                        img = pigBigImg[monster.animation]
-
+                        img = pigBigImg[turn][monster.animation]
                 canvas.create_image(monster.x, monster.y, image=img, anchor="center")
         # Diamond display
         for diamond in game.diamonds:
@@ -196,7 +198,7 @@ if __name__ == "__main__":
                   ImageTk.PhotoImage(Image.open("img/orc/walk_4.png")),
                   ImageTk.PhotoImage(Image.open("img/orc/walk_5.png"))]
 
-    zombieImg = [ImageTk.PhotoImage(Image.open("img/zombie/zombie_0.png")),
+    zombieImg =   [[ImageTk.PhotoImage(Image.open("img/zombie/zombie_0.png")),
                     ImageTk.PhotoImage(Image.open("img/zombie/zombie_1.png")),
                     ImageTk.PhotoImage(Image.open("img/zombie/zombie_2.png")),
                     ImageTk.PhotoImage(Image.open("img/zombie/zombie_3.png")),
@@ -207,9 +209,21 @@ if __name__ == "__main__":
                     ImageTk.PhotoImage(Image.open("img/zombie/zombie_8.png")),
                     ImageTk.PhotoImage(Image.open("img/zombie/zombie_9.png")),
                     ImageTk.PhotoImage(Image.open("img/zombie/zombie_10.png")),
-                    ImageTk.PhotoImage(Image.open("img/zombie/zombie_11.png"))]
+                    ImageTk.PhotoImage(Image.open("img/zombie/zombie_11.png"))],
+                   [ImageTk.PhotoImage(Image.open("img/zombie/zombie_0.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/zombie/zombie_1.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/zombie/zombie_2.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/zombie/zombie_3.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/zombie/zombie_4.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/zombie/zombie_5.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/zombie/zombie_6.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/zombie/zombie_7.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/zombie/zombie_8.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/zombie/zombie_9.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/zombie/zombie_10.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/zombie/zombie_11.png").transpose(Image.FLIP_LEFT_RIGHT))]]
 
-    zombieBigImg = [ImageTk.PhotoImage(Image.open("img/zombieBig/zombieBig_0.png")),
+    zombieBigImg = [[ImageTk.PhotoImage(Image.open("img/zombieBig/zombieBig_0.png")),
                     ImageTk.PhotoImage(Image.open("img/zombieBig/zombieBig_1.png")),
                     ImageTk.PhotoImage(Image.open("img/zombieBig/zombieBig_2.png")),
                     ImageTk.PhotoImage(Image.open("img/zombieBig/zombieBig_3.png")),
@@ -219,9 +233,20 @@ if __name__ == "__main__":
                     ImageTk.PhotoImage(Image.open("img/zombieBig/zombieBig_7.png")),
                     ImageTk.PhotoImage(Image.open("img/zombieBig/zombieBig_8.png")),
                     ImageTk.PhotoImage(Image.open("img/zombieBig/zombieBig_9.png")),
-                    ImageTk.PhotoImage(Image.open("img/zombieBig/zombieBig_10.png"))]
+                    ImageTk.PhotoImage(Image.open("img/zombieBig/zombieBig_10.png"))], 
+                     [ImageTk.PhotoImage(Image.open("img/zombieBig/zombieBig_0.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/zombieBig/zombieBig_1.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/zombieBig/zombieBig_2.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/zombieBig/zombieBig_3.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/zombieBig/zombieBig_4.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/zombieBig/zombieBig_5.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/zombieBig/zombieBig_6.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/zombieBig/zombieBig_7.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/zombieBig/zombieBig_8.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/zombieBig/zombieBig_9.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/zombieBig/zombieBig_10.png").transpose(Image.FLIP_LEFT_RIGHT))]]
 
-    skeletonImg = [ImageTk.PhotoImage(Image.open("img/skeleton/skeleton_0.png")),
+    skeletonImg = [[ImageTk.PhotoImage(Image.open("img/skeleton/skeleton_0.png")),
                     ImageTk.PhotoImage(Image.open("img/skeleton/skeleton_1.png")),
                     ImageTk.PhotoImage(Image.open("img/skeleton/skeleton_2.png")),
                     ImageTk.PhotoImage(Image.open("img/skeleton/skeleton_3.png")),
@@ -231,9 +256,20 @@ if __name__ == "__main__":
                     ImageTk.PhotoImage(Image.open("img/skeleton/skeleton_7.png")),
                     ImageTk.PhotoImage(Image.open("img/skeleton/skeleton_8.png")),
                     ImageTk.PhotoImage(Image.open("img/skeleton/skeleton_9.png")),
-                    ImageTk.PhotoImage(Image.open("img/skeleton/skeleton_10.png"))]
+                    ImageTk.PhotoImage(Image.open("img/skeleton/skeleton_10.png"))],
+                    [ImageTk.PhotoImage(Image.open("img/skeleton/skeleton_0.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/skeleton/skeleton_1.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/skeleton/skeleton_2.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/skeleton/skeleton_3.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/skeleton/skeleton_4.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/skeleton/skeleton_5.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/skeleton/skeleton_6.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/skeleton/skeleton_7.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/skeleton/skeleton_8.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/skeleton/skeleton_9.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/skeleton/skeleton_10.png").transpose(Image.FLIP_LEFT_RIGHT))]]
 
-    skeletonBigImg = [ImageTk.PhotoImage(Image.open("img/skeletonBig/skeletonBig_0.png")),
+    skeletonBigImg = [[ImageTk.PhotoImage(Image.open("img/skeletonBig/skeletonBig_0.png")),
                     ImageTk.PhotoImage(Image.open("img/skeletonBig/skeletonBig_1.png")),
                     ImageTk.PhotoImage(Image.open("img/skeletonBig/skeletonBig_2.png")),
                     ImageTk.PhotoImage(Image.open("img/skeletonBig/skeletonBig_3.png")),
@@ -244,9 +280,21 @@ if __name__ == "__main__":
                     ImageTk.PhotoImage(Image.open("img/skeletonBig/skeletonBig_8.png")),
                     ImageTk.PhotoImage(Image.open("img/skeletonBig/skeletonBig_9.png")),
                     ImageTk.PhotoImage(Image.open("img/skeletonBig/skeletonBig_10.png")),
-                    ImageTk.PhotoImage(Image.open("img/skeletonBig/skeletonBig_11.png"))]
+                    ImageTk.PhotoImage(Image.open("img/skeletonBig/skeletonBig_11.png"))],
+                    [ImageTk.PhotoImage(Image.open("img/skeletonBig/skeletonBig_0.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/skeletonBig/skeletonBig_1.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/skeletonBig/skeletonBig_2.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/skeletonBig/skeletonBig_3.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/skeletonBig/skeletonBig_4.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/skeletonBig/skeletonBig_5.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/skeletonBig/skeletonBig_6.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/skeletonBig/skeletonBig_7.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/skeletonBig/skeletonBig_8.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/skeletonBig/skeletonBig_9.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/skeletonBig/skeletonBig_10.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/skeletonBig/skeletonBig_11.png").transpose(Image.FLIP_LEFT_RIGHT))]]
 
-    orcImg = [ImageTk.PhotoImage(Image.open("img/orc/orc_0.png")),
+    orcImg = [[ImageTk.PhotoImage(Image.open("img/orc/orc_0.png")),
                     ImageTk.PhotoImage(Image.open("img/orc/orc_1.png")),
                     ImageTk.PhotoImage(Image.open("img/orc/orc_2.png")),
                     ImageTk.PhotoImage(Image.open("img/orc/orc_3.png")),
@@ -257,9 +305,21 @@ if __name__ == "__main__":
                     ImageTk.PhotoImage(Image.open("img/orc/orc_8.png")),
                     ImageTk.PhotoImage(Image.open("img/orc/orc_9.png")),
                     ImageTk.PhotoImage(Image.open("img/orc/orc_10.png")),
-                    ImageTk.PhotoImage(Image.open("img/orc/orc_11.png"))]
+                    ImageTk.PhotoImage(Image.open("img/orc/orc_11.png"))],
+                    [ImageTk.PhotoImage(Image.open("img/orc/orc_0.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/orc/orc_1.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/orc/orc_2.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/orc/orc_3.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/orc/orc_4.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/orc/orc_5.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/orc/orc_6.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/orc/orc_7.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/orc/orc_8.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/orc/orc_9.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/orc/orc_10.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/orc/orc_11.png").transpose(Image.FLIP_LEFT_RIGHT))]]
 
-    orcBigImg = [ImageTk.PhotoImage(Image.open("img/orcBig/orcBig_0.png")),
+    orcBigImg = [[ImageTk.PhotoImage(Image.open("img/orcBig/orcBig_0.png")),
                     ImageTk.PhotoImage(Image.open("img/orcBig/orcBig_1.png")),
                     ImageTk.PhotoImage(Image.open("img/orcBig/orcBig_2.png")),
                     ImageTk.PhotoImage(Image.open("img/orcBig/orcBig_3.png")),
@@ -270,9 +330,21 @@ if __name__ == "__main__":
                     ImageTk.PhotoImage(Image.open("img/orcBig/orcBig_8.png")),
                     ImageTk.PhotoImage(Image.open("img/orcBig/orcBig_9.png")),
                     ImageTk.PhotoImage(Image.open("img/orcBig/orcBig_10.png")),
-                    ImageTk.PhotoImage(Image.open("img/orcBig/orcBig_11.png"))]
+                    ImageTk.PhotoImage(Image.open("img/orcBig/orcBig_11.png"))],
+                    [ImageTk.PhotoImage(Image.open("img/orcBig/orcBig_0.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/orcBig/orcBig_1.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/orcBig/orcBig_2.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/orcBig/orcBig_3.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/orcBig/orcBig_4.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/orcBig/orcBig_5.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/orcBig/orcBig_6.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/orcBig/orcBig_7.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/orcBig/orcBig_8.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/orcBig/orcBig_9.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/orcBig/orcBig_10.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/orcBig/orcBig_11.png").transpose(Image.FLIP_LEFT_RIGHT))]]
 
-    pigImg = [ImageTk.PhotoImage(Image.open("img/pig/pig_0.png")),
+    pigImg = [[ImageTk.PhotoImage(Image.open("img/pig/pig_0.png")),
                     ImageTk.PhotoImage(Image.open("img/pig/pig_1.png")),
                     ImageTk.PhotoImage(Image.open("img/pig/pig_2.png")),
                     ImageTk.PhotoImage(Image.open("img/pig/pig_3.png")),
@@ -283,9 +355,21 @@ if __name__ == "__main__":
                     ImageTk.PhotoImage(Image.open("img/pig/pig_8.png")),
                     ImageTk.PhotoImage(Image.open("img/pig/pig_9.png")),
                     ImageTk.PhotoImage(Image.open("img/pig/pig_10.png")),
-                    ImageTk.PhotoImage(Image.open("img/pig/pig_11.png"))]
+                    ImageTk.PhotoImage(Image.open("img/pig/pig_11.png"))],
+                    [ImageTk.PhotoImage(Image.open("img/pig/pig_0.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/pig/pig_1.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/pig/pig_2.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/pig/pig_3.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/pig/pig_4.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/pig/pig_5.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/pig/pig_6.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/pig/pig_7.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/pig/pig_8.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/pig/pig_9.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/pig/pig_10.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/pig/pig_11.png").transpose(Image.FLIP_LEFT_RIGHT))]]
 
-    pigBigImg = [ImageTk.PhotoImage(Image.open("img/pigBig/pigBig_0.png")),
+    pigBigImg = [[ImageTk.PhotoImage(Image.open("img/pigBig/pigBig_0.png")),
                     ImageTk.PhotoImage(Image.open("img/pigBig/pigBig_1.png")),
                     ImageTk.PhotoImage(Image.open("img/pigBig/pigBig_2.png")),
                     ImageTk.PhotoImage(Image.open("img/pigBig/pigBig_3.png")),
@@ -296,7 +380,19 @@ if __name__ == "__main__":
                     ImageTk.PhotoImage(Image.open("img/pigBig/pigBig_8.png")),
                     ImageTk.PhotoImage(Image.open("img/pigBig/pigBig_9.png")),
                     ImageTk.PhotoImage(Image.open("img/pigBig/pigBig_10.png")),
-                    ImageTk.PhotoImage(Image.open("img/pigBig/pigBig_11.png"))]
+                    ImageTk.PhotoImage(Image.open("img/pigBig/pigBig_11.png"))],
+                    [ImageTk.PhotoImage(Image.open("img/pigBig/pigBig_0.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/pigBig/pigBig_1.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/pigBig/pigBig_2.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/pigBig/pigBig_3.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/pigBig/pigBig_4.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/pigBig/pigBig_5.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/pigBig/pigBig_6.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/pigBig/pigBig_7.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/pigBig/pigBig_8.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/pigBig/pigBig_9.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/pigBig/pigBig_10.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/pigBig/pigBig_11.png").transpose(Image.FLIP_LEFT_RIGHT))]]
 
     diamondImg = ImageTk.PhotoImage(Image.open("img/diamond/diamond.png"))
 
