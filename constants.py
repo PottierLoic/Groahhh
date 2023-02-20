@@ -5,11 +5,11 @@ Constants.
 """
 
 # Window size.
-WIDTH = 600
-HEIGHT = 600
+WIDTH = 800
+HEIGHT = 800
 
 # Quadtree.
-CAPACITY = 4
+CAPACITY = 1
 DRAW_RECT = True
 
 # Colors. (to remove when sprites are implemented)
@@ -17,7 +17,7 @@ BACKGROUND_COLOR = "light grey"
 
 # Sizes. (to remove when sprites are implemented)
 PLAYER_HITBOX = 25
-ZOMBIE_SIZE = 24
+ZOMBIE_SIZE = 32
 BULLET_SIZE = 2
 DIAMOND_SIZE = 12
 CHEST_SIZE = 15
@@ -39,8 +39,9 @@ WEAPON_DELAY = 100
 SPAWN_DELAY = 100
 SPAWN_RANGE = 400
 SAFE_DISTANCE = 200
-DIAMOND_SPAWN_CHANCE = 50
+DIAMOND_SPAWN_CHANCE = 10
 CHEST_SPAWN_CHANCE = 20
+ROUND_DELAY = 1000
 
 # Basic zombie stats.
 ZOMBIE_SPEED = 5
@@ -57,4 +58,4 @@ REWARD_POOL = ["orb", "wand", "aura", "laser", "meteor"]
 
 # Orb stats.
 ORB_REVOLUTION_RADIUS = 80
-ORB_RADIUS = 20
+ORB_RADIUS = 30

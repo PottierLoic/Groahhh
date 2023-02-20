@@ -16,26 +16,41 @@ from game import Game
 
 def graphics():
     canvas.delete("all")
-    x_offset = -game.player.x
-    y_offset = -game.player.y
     if DRAW_RECT:
         game.quadtree.draw(canvas)
     if game.state == "menu":
         canvas.create_rectangle(WIDTH/2 - 200, HEIGHT/2 - 100, WIDTH/2 + 200, HEIGHT/2 + 100, fill="grey")
         canvas.create_text(WIDTH/2, HEIGHT/2, text=" ", font="Arial 50", fill="black")
     elif game.state in ("running", "reward"):
-        # Player animation sprite choice AND DISPLAY
+        # Player animation sprite choice and display
         if game.player.moving:
             img = playerWalkImg[game.player.animation]
         else:
             img = playerIdleImg[game.player.animation]
         canvas.create_image(game.player.x, game.player.y, image=img, anchor="center")
-        # Zombie display
-        for zombie in game.zombies:
-            if abs(game.player.x - zombie.x) < WIDTH and abs(game.player.y - zombie.y) < HEIGHT:
-                # Zombie animation sprite choice and display
-                img = batImg[zombie.animation]
-                canvas.create_image(zombie.x, zombie.y, image=img, anchor="center")
+        # Monster display.
+        for monster in game.monsters:
+            if abs(game.player.x - monster.x) < WIDTH and abs(game.player.y - monster.y) < HEIGHT:
+                # monster animation sprite choice and display
+                match monster.type:
+                    case "zombie":
+                        img = zombieImg[monster.animation]
+                    case "skeleton":
+                        img = skeletonImg[monster.animation]
+                    case "orc":
+                        img = orcImg[monster.animation]
+                    case "pig":
+                        img = pigImg[monster.animation]
+                    case "skeletonBig":
+                        img = skeletonBigImg[monster.animation]
+                    case "zombieBig":
+                        img = zombieBigImg[monster.animation]
+                    case "orcBig":
+                        img = orcBigImg[monster.animation]
+                    case "pigBig":
+                        img = pigBigImg[monster.animation]
+
+                canvas.create_image(monster.x, monster.y, image=img, anchor="center")
         # Diamond display
         for diamond in game.diamonds:
             if abs(game.player.x - diamond.x) < WIDTH and abs(game.player.y - diamond.y) < HEIGHT:
@@ -52,7 +67,7 @@ def graphics():
             canvas.create_oval(bullet.x - BULLET_SIZE, bullet.y - BULLET_SIZE, bullet.x + BULLET_SIZE, bullet.y + BULLET_SIZE, fill="black")
         # Orbs sprite display
         for orb in game.player.orbs:
-            canvas.create_oval(orb.x-ORB_RADIUS/2, orb.y-ORB_RADIUS/2, orb.x+ORB_RADIUS/2, orb.y+ORB_RADIUS/2, fill="blue")
+            canvas.create_image(orb.x, orb.y, image=orbImg, anchor="center")
         # Health bar display.
         health_ratio = game.player.health/game.player.maxHealth
         canvas.create_rectangle(game.player.x - 20, game.player.y + 20, game.player.x + 20, game.player.y + 25, fill="black")
@@ -70,6 +85,8 @@ def graphics():
         canvas.create_text(WIDTH - 100, 20, text=f"Round: {game.round}", anchor="nw", font="Arial 15", fill="black")
         # Display fps
         canvas.create_text(WIDTH - 80, HEIGHT - 20, text=f"FPS: {round(frameRate)}", anchor="nw", font="Arial 10", fill="black")
+        # Display spawn left
+        canvas.create_text(WIDTH - 100, 40, text=f"Spawns: {game.spawnLeft}", anchor="nw", font="Arial 10", fill="black")
 
         if game.state == "reward":
             # Display reward selection
@@ -179,18 +196,115 @@ if __name__ == "__main__":
                   ImageTk.PhotoImage(Image.open("img/orc/walk_4.png")),
                   ImageTk.PhotoImage(Image.open("img/orc/walk_5.png"))]
 
-    batImg = [ImageTk.PhotoImage(Image.open("img/bat/idle_0.png")),
-           ImageTk.PhotoImage(Image.open("img/bat/idle_1.png")),
-           ImageTk.PhotoImage(Image.open("img/bat/idle_2.png")),
-           ImageTk.PhotoImage(Image.open("img/bat/idle_3.png")),
-           ImageTk.PhotoImage(Image.open("img/bat/idle_4.png")),
-           ImageTk.PhotoImage(Image.open("img/bat/idle_5.png"))]
-        
+    zombieImg = [ImageTk.PhotoImage(Image.open("img/zombie/zombie_0.png")),
+                    ImageTk.PhotoImage(Image.open("img/zombie/zombie_1.png")),
+                    ImageTk.PhotoImage(Image.open("img/zombie/zombie_2.png")),
+                    ImageTk.PhotoImage(Image.open("img/zombie/zombie_3.png")),
+                    ImageTk.PhotoImage(Image.open("img/zombie/zombie_4.png")),
+                    ImageTk.PhotoImage(Image.open("img/zombie/zombie_5.png")),
+                    ImageTk.PhotoImage(Image.open("img/zombie/zombie_6.png")),
+                    ImageTk.PhotoImage(Image.open("img/zombie/zombie_7.png")),
+                    ImageTk.PhotoImage(Image.open("img/zombie/zombie_8.png")),
+                    ImageTk.PhotoImage(Image.open("img/zombie/zombie_9.png")),
+                    ImageTk.PhotoImage(Image.open("img/zombie/zombie_10.png")),
+                    ImageTk.PhotoImage(Image.open("img/zombie/zombie_11.png"))]
+
+    zombieBigImg = [ImageTk.PhotoImage(Image.open("img/zombieBig/zombieBig_0.png")),
+                    ImageTk.PhotoImage(Image.open("img/zombieBig/zombieBig_1.png")),
+                    ImageTk.PhotoImage(Image.open("img/zombieBig/zombieBig_2.png")),
+                    ImageTk.PhotoImage(Image.open("img/zombieBig/zombieBig_3.png")),
+                    ImageTk.PhotoImage(Image.open("img/zombieBig/zombieBig_4.png")),
+                    ImageTk.PhotoImage(Image.open("img/zombieBig/zombieBig_5.png")),
+                    ImageTk.PhotoImage(Image.open("img/zombieBig/zombieBig_6.png")),
+                    ImageTk.PhotoImage(Image.open("img/zombieBig/zombieBig_7.png")),
+                    ImageTk.PhotoImage(Image.open("img/zombieBig/zombieBig_8.png")),
+                    ImageTk.PhotoImage(Image.open("img/zombieBig/zombieBig_9.png")),
+                    ImageTk.PhotoImage(Image.open("img/zombieBig/zombieBig_10.png"))]
+
+    skeletonImg = [ImageTk.PhotoImage(Image.open("img/skeleton/skeleton_0.png")),
+                    ImageTk.PhotoImage(Image.open("img/skeleton/skeleton_1.png")),
+                    ImageTk.PhotoImage(Image.open("img/skeleton/skeleton_2.png")),
+                    ImageTk.PhotoImage(Image.open("img/skeleton/skeleton_3.png")),
+                    ImageTk.PhotoImage(Image.open("img/skeleton/skeleton_4.png")),
+                    ImageTk.PhotoImage(Image.open("img/skeleton/skeleton_5.png")),
+                    ImageTk.PhotoImage(Image.open("img/skeleton/skeleton_6.png")),
+                    ImageTk.PhotoImage(Image.open("img/skeleton/skeleton_7.png")),
+                    ImageTk.PhotoImage(Image.open("img/skeleton/skeleton_8.png")),
+                    ImageTk.PhotoImage(Image.open("img/skeleton/skeleton_9.png")),
+                    ImageTk.PhotoImage(Image.open("img/skeleton/skeleton_10.png"))]
+
+    skeletonBigImg = [ImageTk.PhotoImage(Image.open("img/skeletonBig/skeletonBig_0.png")),
+                    ImageTk.PhotoImage(Image.open("img/skeletonBig/skeletonBig_1.png")),
+                    ImageTk.PhotoImage(Image.open("img/skeletonBig/skeletonBig_2.png")),
+                    ImageTk.PhotoImage(Image.open("img/skeletonBig/skeletonBig_3.png")),
+                    ImageTk.PhotoImage(Image.open("img/skeletonBig/skeletonBig_4.png")),
+                    ImageTk.PhotoImage(Image.open("img/skeletonBig/skeletonBig_5.png")),
+                    ImageTk.PhotoImage(Image.open("img/skeletonBig/skeletonBig_6.png")),
+                    ImageTk.PhotoImage(Image.open("img/skeletonBig/skeletonBig_7.png")),
+                    ImageTk.PhotoImage(Image.open("img/skeletonBig/skeletonBig_8.png")),
+                    ImageTk.PhotoImage(Image.open("img/skeletonBig/skeletonBig_9.png")),
+                    ImageTk.PhotoImage(Image.open("img/skeletonBig/skeletonBig_10.png")),
+                    ImageTk.PhotoImage(Image.open("img/skeletonBig/skeletonBig_11.png"))]
+
+    orcImg = [ImageTk.PhotoImage(Image.open("img/orc/orc_0.png")),
+                    ImageTk.PhotoImage(Image.open("img/orc/orc_1.png")),
+                    ImageTk.PhotoImage(Image.open("img/orc/orc_2.png")),
+                    ImageTk.PhotoImage(Image.open("img/orc/orc_3.png")),
+                    ImageTk.PhotoImage(Image.open("img/orc/orc_4.png")),
+                    ImageTk.PhotoImage(Image.open("img/orc/orc_5.png")),
+                    ImageTk.PhotoImage(Image.open("img/orc/orc_6.png")),
+                    ImageTk.PhotoImage(Image.open("img/orc/orc_7.png")),
+                    ImageTk.PhotoImage(Image.open("img/orc/orc_8.png")),
+                    ImageTk.PhotoImage(Image.open("img/orc/orc_9.png")),
+                    ImageTk.PhotoImage(Image.open("img/orc/orc_10.png")),
+                    ImageTk.PhotoImage(Image.open("img/orc/orc_11.png"))]
+
+    orcBigImg = [ImageTk.PhotoImage(Image.open("img/orcBig/orcBig_0.png")),
+                    ImageTk.PhotoImage(Image.open("img/orcBig/orcBig_1.png")),
+                    ImageTk.PhotoImage(Image.open("img/orcBig/orcBig_2.png")),
+                    ImageTk.PhotoImage(Image.open("img/orcBig/orcBig_3.png")),
+                    ImageTk.PhotoImage(Image.open("img/orcBig/orcBig_4.png")),
+                    ImageTk.PhotoImage(Image.open("img/orcBig/orcBig_5.png")),
+                    ImageTk.PhotoImage(Image.open("img/orcBig/orcBig_6.png")),
+                    ImageTk.PhotoImage(Image.open("img/orcBig/orcBig_7.png")),
+                    ImageTk.PhotoImage(Image.open("img/orcBig/orcBig_8.png")),
+                    ImageTk.PhotoImage(Image.open("img/orcBig/orcBig_9.png")),
+                    ImageTk.PhotoImage(Image.open("img/orcBig/orcBig_10.png")),
+                    ImageTk.PhotoImage(Image.open("img/orcBig/orcBig_11.png"))]
+
+    pigImg = [ImageTk.PhotoImage(Image.open("img/pig/pig_0.png")),
+                    ImageTk.PhotoImage(Image.open("img/pig/pig_1.png")),
+                    ImageTk.PhotoImage(Image.open("img/pig/pig_2.png")),
+                    ImageTk.PhotoImage(Image.open("img/pig/pig_3.png")),
+                    ImageTk.PhotoImage(Image.open("img/pig/pig_4.png")),
+                    ImageTk.PhotoImage(Image.open("img/pig/pig_5.png")),
+                    ImageTk.PhotoImage(Image.open("img/pig/pig_6.png")),
+                    ImageTk.PhotoImage(Image.open("img/pig/pig_7.png")),
+                    ImageTk.PhotoImage(Image.open("img/pig/pig_8.png")),
+                    ImageTk.PhotoImage(Image.open("img/pig/pig_9.png")),
+                    ImageTk.PhotoImage(Image.open("img/pig/pig_10.png")),
+                    ImageTk.PhotoImage(Image.open("img/pig/pig_11.png"))]
+
+    pigBigImg = [ImageTk.PhotoImage(Image.open("img/pigBig/pigBig_0.png")),
+                    ImageTk.PhotoImage(Image.open("img/pigBig/pigBig_1.png")),
+                    ImageTk.PhotoImage(Image.open("img/pigBig/pigBig_2.png")),
+                    ImageTk.PhotoImage(Image.open("img/pigBig/pigBig_3.png")),
+                    ImageTk.PhotoImage(Image.open("img/pigBig/pigBig_4.png")),
+                    ImageTk.PhotoImage(Image.open("img/pigBig/pigBig_5.png")),
+                    ImageTk.PhotoImage(Image.open("img/pigBig/pigBig_6.png")),
+                    ImageTk.PhotoImage(Image.open("img/pigBig/pigBig_7.png")),
+                    ImageTk.PhotoImage(Image.open("img/pigBig/pigBig_8.png")),
+                    ImageTk.PhotoImage(Image.open("img/pigBig/pigBig_9.png")),
+                    ImageTk.PhotoImage(Image.open("img/pigBig/pigBig_10.png")),
+                    ImageTk.PhotoImage(Image.open("img/pigBig/pigBig_11.png"))]
+
     diamondImg = ImageTk.PhotoImage(Image.open("img/diamond/diamond.png"))
 
     chestImg = [ImageTk.PhotoImage(Image.open("img/chest/chest_0.png")),
                 ImageTk.PhotoImage(Image.open("img/chest/chest_1.png")),
                 ImageTk.PhotoImage(Image.open("img/chest/chest_2.png"))]
+
+    orbImg = [ImageTk.PhotoImage(Image.open("img/orb/orb.png"))]
 
     # Main loop.
     update()
