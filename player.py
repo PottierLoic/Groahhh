@@ -38,6 +38,7 @@ class Player:
         self.right = False
         self.up = False
         self.down = False
+        self.speed = 0.5
 
         # Health.
         self.maxHealth = 200
@@ -63,10 +64,10 @@ class Player:
         self.haveWand = True
         self.wandLevel = 1
 
-        self.haveOrb = True
+        self.haveOrb = False
         self.orbSpeed = 0.006
         self.orbAngle = 0
-        self.orbLevel = 4
+        self.orbLevel = 0
 
         self.haveMeteor = False
         self.meteorLevel = 0
@@ -97,10 +98,10 @@ class Player:
             bullet.move()
         
         # Movement
-        if self.left: self.x -= 1
-        if self.right: self.x += 1
-        if self.up: self.y -= 1
-        if self.down: self.y += 1
+        if self.left: self.x -= 1 * self.speed
+        if self.right: self.x += 1 * self.speed
+        if self.up: self.y -= 1 * self.speed
+        if self.down: self.y += 1 * self.speed
 
         # Level up check
         if self.exp >= EXPERIENCE_AMOUNT[self.level-1]:

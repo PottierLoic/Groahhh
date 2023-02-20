@@ -40,15 +40,15 @@ class Monster:
 
         # Position outside of the safe zone.
         if random.randrange(2) == 0:
-            x1 = random.randint(self.parent.player.x - SPAWN_RANGE, self.parent.player.x - SAFE_DISTANCE)
-            x2 = random.randint(self.parent.player.x + SAFE_DISTANCE, self.parent.player.x + SPAWN_RANGE)
+            x1 = random.uniform(self.parent.player.x - SPAWN_RANGE, self.parent.player.x - SAFE_DISTANCE)
+            x2 = random.uniform(self.parent.player.x + SAFE_DISTANCE, self.parent.player.x + SPAWN_RANGE)
             self.x = random.choice([x1, x2])
-            self.y = random.randint(self.parent.player.y - SPAWN_RANGE, self.parent.player.y + SPAWN_RANGE)
+            self.y = random.uniform(self.parent.player.y - SPAWN_RANGE, self.parent.player.y + SPAWN_RANGE)
         else:
-            y1 = random.randint(self.parent.player.y - SPAWN_RANGE, self.parent.player.y - SAFE_DISTANCE)
-            y2 = random.randint(self.parent.player.y + SAFE_DISTANCE, self.parent.player.y + SPAWN_RANGE)
+            y1 = random.uniform(self.parent.player.y - SPAWN_RANGE, self.parent.player.y - SAFE_DISTANCE)
+            y2 = random.uniform(self.parent.player.y + SAFE_DISTANCE, self.parent.player.y + SPAWN_RANGE)
             self.y = random.choice([y1, y2])
-            self.x = random.randint(self.parent.player.x - SPAWN_RANGE, self.parent.player.x + SPAWN_RANGE)
+            self.x = random.uniform(self.parent.player.x - SPAWN_RANGE, self.parent.player.x + SPAWN_RANGE)
     
     def update(self, player):
         """

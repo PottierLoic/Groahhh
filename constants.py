@@ -10,7 +10,6 @@ HEIGHT = 800
 
 # Quadtree.
 CAPACITY = 1
-DRAW_RECT = True
 
 # Colors. (to remove when sprites are implemented)
 BACKGROUND_COLOR = "light grey"
@@ -44,11 +43,11 @@ CHEST_SPAWN_CHANCE = 20
 ROUND_DELAY = 1000
 
 # Basic zombie stats.
-ZOMBIE_SPEED = 5
+ZOMBIE_SPEED = 3
 HIT_DELAY = 100
 
 # Player level amount.
-EXPERIENCE_AMOUNT = [100, 200, 300, 400, 500, 600, 700, 800, 900, 100000]
+EXPERIENCE_AMOUNT = [40, 60, 100, 150, 210, 280, 700, 800, 900, 100000]
 
 # Rounds stats.
 ROUNDS_SPAWNS = [20, 40, 60, 100, 150]

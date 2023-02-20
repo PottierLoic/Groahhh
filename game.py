@@ -6,6 +6,7 @@ Game class.
 
 # Basic libraries.
 import math
+import random
 
 # Local libraries.
 from constants import *
@@ -62,7 +63,6 @@ class Game():
     def update(self):
         """Update the game."""
         if self.state == "running":
-            self.player.exp += 0.1
             # Position updates
             self.player.update()
             for monster in self.monsters:
@@ -80,6 +80,7 @@ class Game():
                 self.quadtree.insert(chest)
             
             # Player collision
+            monsterToAim = []
             nearby = []
             self.quadtree.query(Rect(self.player.x, self.player.y, PLAYER_HITBOX, PLAYER_HITBOX), nearby)
             for obj in nearby:
@@ -100,6 +101,23 @@ class Game():
                                 self.rewardQueue.append([obj.reward, None])
                                 self.chooseReward(0)
                                 obj.open()
+
+            # Updating player direction to the nearest monster
+            self.quadtree.query(Rect(self.player.x, self.player.y, 150, 150), nearby)
+            for obj in nearby:
+                if obj.tag == "monster":
+                    monsterToAim.append(obj)
+            if len(monsterToAim) > 0:
+                min = 100000
+                minx, miny = 0, 0
+                for monster in monsterToAim:
+                    if math.sqrt((self.player.x - monster.x)**2 + (self.player.y - monster.y)**2) < min:
+                        min = math.sqrt((self.player.x - monster.x)**2 + (self.player.y - monster.y)**2)
+                        minx, miny = monster.x, monster.y
+                angle = math.atan2(miny - self.player.y, minx - self.player.x)
+                self.player.direction = (math.cos(angle), math.sin(angle))
+            else:
+                self.player.direction = (math.cos(random.randint(0, 3)), math.sin(random.randint(0, 3)))
 
             # Bullet collision check.
             for bullet in self.player.bullets:
@@ -139,8 +157,6 @@ class Game():
             # Game over check
             if self.player.health <= 0:
                 self.reset()
-            print("reste" + str(self.spawnLeft))
-            print(self.roundDelay)
 
     def spawn(self):
         """Spawn monster."""
@@ -154,6 +170,8 @@ class Game():
                     self.monsters.append(Orc(self))
                 case 4:
                     self.monsters.append(Pig(self))
+                case _:
+                    self.monsters.append(Zombie(self))
             if self.spawnLeft != 0:
                 self.spawnLeft -= 1
             self.spawnDelay = SPAWN_DELAY
@@ -172,6 +190,8 @@ class Game():
                 self.monsters.append(OrcBig(self))
             case 4:
                 self.monsters.append(PigBig(self))
+            case _:
+                self.monsters.append(ZombieBig(self))
             
 
     def chooseReward(self, reward):

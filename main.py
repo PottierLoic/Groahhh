@@ -15,22 +15,26 @@ from constants import *
 from game import Game
 
 def graphics():
+    xoffset = game.player.x - WIDTH/2
+    yoffset = game.player.y - HEIGHT/2
     canvas.delete("all")
-    if DRAW_RECT:
-        game.quadtree.draw(canvas)
+    if quadTreeDisplay:
+        game.quadtree.draw(canvas, xoffset, yoffset)
     if game.state == "menu":
         canvas.create_rectangle(WIDTH/2 - 200, HEIGHT/2 - 100, WIDTH/2 + 200, HEIGHT/2 + 100, fill="grey")
         canvas.create_text(WIDTH/2, HEIGHT/2, text=" ", font="Arial 50", fill="black")
     elif game.state in ("running", "reward"):
         # Player animation sprite choice and display
+        direct = 0
+        if game.player.left: direct = 1
         if game.player.moving:
-            img = playerWalkImg[game.player.animation]
+            img = playerMovingImg[direct][game.player.animation]
         else:
-            img = playerIdleImg[game.player.animation]
-        canvas.create_image(game.player.x, game.player.y, image=img, anchor="center")
+            img = playerIdleImg[direct][game.player.animation]
+        canvas.create_image(game.player.x - xoffset, game.player.y - yoffset, image=img, anchor="center")
         # Monster display.
         for monster in game.monsters:
-            if abs(game.player.x - monster.x) < WIDTH and abs(game.player.y - monster.y) < HEIGHT:
+            if abs(game.player.x - monster.x - xoffset) < WIDTH and abs(game.player.y - monster.y - yoffset) < HEIGHT:
                 # monster animation sprite choice and display
                 turn = 0
                 if monster.tag != "player":
@@ -52,28 +56,28 @@ def graphics():
                         img = orcBigImg[turn][monster.animation]
                     case "pigBig":
                         img = pigBigImg[turn][monster.animation]
-                canvas.create_image(monster.x, monster.y, image=img, anchor="center")
+                canvas.create_image(monster.x - xoffset, monster.y - yoffset, image=img, anchor="center")
         # Diamond display
         for diamond in game.diamonds:
             if abs(game.player.x - diamond.x) < WIDTH and abs(game.player.y - diamond.y) < HEIGHT:
                 # Diamond sprite display
-                canvas.create_image(diamond.x, diamond.y, image=diamondImg, anchor="center")
+                canvas.create_image(diamond.x - xoffset, diamond.y - yoffset, image=diamondImg, anchor="center")
         # Chest display
         for chest in game.chests:
             if abs(game.player.x - chest.x) < WIDTH and abs(game.player.y - chest.y) < HEIGHT:
                 # Diamond sprite display
                 img = chestImg[chest.animation]
-                canvas.create_image(chest.x, chest.y, image=img, anchor="center")
+                canvas.create_image(chest.x - xoffset, chest.y - yoffset, image=img, anchor="center")
         # Bullet sprite display
         for bullet in game.player.bullets:
-            canvas.create_oval(bullet.x - BULLET_SIZE, bullet.y - BULLET_SIZE, bullet.x + BULLET_SIZE, bullet.y + BULLET_SIZE, fill="black")
+            canvas.create_oval(bullet.x - BULLET_SIZE - xoffset, bullet.y - BULLET_SIZE - yoffset, bullet.x + BULLET_SIZE - xoffset, bullet.y + BULLET_SIZE - yoffset, fill="black")
         # Orbs sprite display
         for orb in game.player.orbs:
-            canvas.create_image(orb.x, orb.y, image=orbImg, anchor="center")
+            canvas.create_image(orb.x - xoffset, orb.y - yoffset, image=orbImg, anchor="center")
         # Health bar display.
         health_ratio = game.player.health/game.player.maxHealth
-        canvas.create_rectangle(game.player.x - 20, game.player.y + 20, game.player.x + 20, game.player.y + 25, fill="black")
-        canvas.create_rectangle(game.player.x - 18, game.player.y + 21, game.player.x - 18 + 36 * health_ratio, game.player.y + 24, outline="green", fill="green")
+        canvas.create_rectangle(game.player.x - 20 - xoffset, game.player.y + 20 - yoffset, game.player.x + 20 - xoffset, game.player.y + 25 - yoffset, fill="black")
+        canvas.create_rectangle(game.player.x - 18 - xoffset, game.player.y + 21 - yoffset, game.player.x - 18 + 36 * health_ratio - xoffset, game.player.y + 24 - yoffset, outline="green", fill="green")
         # Display experience
         try:
             exp_ratio = game.player.exp/EXPERIENCE_AMOUNT[game.player.level-1]
@@ -108,8 +112,6 @@ def updateCursor():
     global mousex, mousey
     mousex = window.winfo_pointerx() - window.winfo_rootx()
     mousey = window.winfo_pointery() - window.winfo_rooty()
-    angle = math.atan2(mousey - game.player.y, mousex - game.player.x)
-    game.player.direction = (math.cos(angle), math.sin(angle))
 
 def keyPressHandler(action):
     if action in ("q", "d", "z", "s"):
@@ -159,6 +161,11 @@ def update():
         pass
     window.after(DELAY, update)
 
+def rectDisplay():
+    global quadTreeDisplay
+    quadTreeDisplay = not quadTreeDisplay
+    print(quadTreeDisplay)
+
 if __name__ == "__main__":
     
     # Variables.
@@ -166,6 +173,7 @@ if __name__ == "__main__":
     mousey = 0
     direction = 0
     frameRate = 10
+    quadTreeDisplay = False
     
     # Game creation.
     game = Game()
@@ -184,19 +192,42 @@ if __name__ == "__main__":
     window.bind("<KeyRelease>", lambda event: keyReleaseHandler(event.keysym))
     window.bind("<Motion>", lambda event: updateCursor())
     window.bind("<Button-1>", lambda event: click())
+    window.bind("<space>", lambda event: rectDisplay())
 
     # Images.
-    playerIdleImg = [ImageTk.PhotoImage(Image.open("img/orc/idle_0.png")),
-                  ImageTk.PhotoImage(Image.open("img/orc/idle_1.png")),
-                  ImageTk.PhotoImage(Image.open("img/orc/idle_2.png")),
-                  ImageTk.PhotoImage(Image.open("img/orc/idle_3.png"))]
-
-    playerWalkImg = [ImageTk.PhotoImage(Image.open("img/orc/walk_0.png")),
-                  ImageTk.PhotoImage(Image.open("img/orc/walk_1.png")),
-                  ImageTk.PhotoImage(Image.open("img/orc/walk_2.png")),
-                  ImageTk.PhotoImage(Image.open("img/orc/walk_3.png")),
-                  ImageTk.PhotoImage(Image.open("img/orc/walk_4.png")),
-                  ImageTk.PhotoImage(Image.open("img/orc/walk_5.png"))]
+    playerIdleImg = [[ImageTk.PhotoImage(Image.open("img/player/idle/playerIdle_0.png")),
+                    ImageTk.PhotoImage(Image.open("img/player/idle/playerIdle_1.png")),
+                    ImageTk.PhotoImage(Image.open("img/player/idle/playerIdle_2.png")),
+                    ImageTk.PhotoImage(Image.open("img/player/idle/playerIdle_3.png")),
+                    ImageTk.PhotoImage(Image.open("img/player/idle/playerIdle_4.png")),
+                    ImageTk.PhotoImage(Image.open("img/player/idle/playerIdle_5.png")),
+                    ImageTk.PhotoImage(Image.open("img/player/idle/playerIdle_6.png")),
+                    ImageTk.PhotoImage(Image.open("img/player/idle/playerIdle_7.png"))],
+                   [ImageTk.PhotoImage(Image.open("img/player/idle/playerIdle_0.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/player/idle/playerIdle_1.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/player/idle/playerIdle_2.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/player/idle/playerIdle_3.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/player/idle/playerIdle_4.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/player/idle/playerIdle_5.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/player/idle/playerIdle_6.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/player/idle/playerIdle_7.png").transpose(Image.FLIP_LEFT_RIGHT))]]
+   
+    playerMovingImg = [[ImageTk.PhotoImage(Image.open("img/player/moving/playerMoving_0.png")),
+                    ImageTk.PhotoImage(Image.open("img/player/moving/playerMoving_1.png")),
+                    ImageTk.PhotoImage(Image.open("img/player/moving/playerMoving_2.png")),
+                    ImageTk.PhotoImage(Image.open("img/player/moving/playerMoving_3.png")),
+                    ImageTk.PhotoImage(Image.open("img/player/moving/playerMoving_4.png")),
+                    ImageTk.PhotoImage(Image.open("img/player/moving/playerMoving_5.png")),
+                    ImageTk.PhotoImage(Image.open("img/player/moving/playerMoving_6.png")),
+                    ImageTk.PhotoImage(Image.open("img/player/moving/playerMoving_7.png"))],
+                    [ImageTk.PhotoImage(Image.open("img/player/moving/playerMoving_0.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/player/moving/playerMoving_1.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/player/moving/playerMoving_2.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/player/moving/playerMoving_3.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/player/moving/playerMoving_4.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/player/moving/playerMoving_5.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/player/moving/playerMoving_6.png").transpose(Image.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/player/moving/playerMoving_7.png").transpose(Image.FLIP_LEFT_RIGHT))]]
 
     zombieImg =   [[ImageTk.PhotoImage(Image.open("img/zombie/zombie_0.png")),
                     ImageTk.PhotoImage(Image.open("img/zombie/zombie_1.png")),
