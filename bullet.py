@@ -19,12 +19,12 @@ class Bullet:
                 parent (Player): The player who shot the bullet.
                 direction (tuple): The direction of the bullet.
         """
+        self.tag = "bullet"
         self.parent = parent
         self.x = self.parent.x
         self.y = self.parent.y
         self.life = FALL_DISTANCE
         self.direction = direction
-        self.tag = "bullet"
 
 
     def move(self):
@@ -33,6 +33,4 @@ class Bullet:
         self.y += self.direction[1] * BULLET_SPEED
         self.life -= 1
         if self.life <= 0:
-            self.parent.bullets.remove(self)
-        if 0>self.x>WIDTH or 0>self.y>HEIGHT:
             self.parent.bullets.remove(self)
