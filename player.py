@@ -20,6 +20,7 @@ class Player:
         Initialize the player.
 
             Args:
+                parent (Game): The parent class of the player
                 x (int): The x position of the player.
                 y (int): The y position of the player.
         """
@@ -63,7 +64,7 @@ class Player:
         self.wandLevel = 1
 
         self.haveOrb = True
-        self.orbSpeed = 0.003
+        self.orbSpeed = 0.006
         self.orbAngle = 0
         self.orbLevel = 4
 
@@ -126,6 +127,7 @@ class Player:
         pass
 
     def orb(self):
+        """Calculate all orb positions"""
         self.orbs = []
         for i in range(self.orbLevel):
             theta = self.orbAngle+(6.28/self.orbLevel)*i
@@ -135,6 +137,12 @@ class Player:
         self.orbAngle+=self.orbSpeed
 
     def upgrade(self, reward):
+        """
+        Upgrade the level of a weapon
+        
+            Args:
+                reward (str): the weapon to be upgraded
+        """
         print("Reward : ", reward)
         match reward:
             case "wand":

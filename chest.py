@@ -12,7 +12,14 @@ from constants import *
 
 class Chest:
     def __init__(self, parent, x, y) -> None:
+        """
+        Initialize the chest
 
+            Args:
+                parent (Game): The parent class of the chest
+                x (int): The x position of the chest.
+                y (int): The y position of the chest.
+        """
         # Global.
         self.tag = "chest"
         self.parent = parent
@@ -45,4 +52,5 @@ class Chest:
                 self.parent.chests.remove(self)
 
     def open(self):
+        """Set the oppened attribute to True"""
         self.oppened = True

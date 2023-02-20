@@ -5,8 +5,12 @@ Constants.
 """
 
 # Window size.
-WIDTH = 400
-HEIGHT = 400
+WIDTH = 600
+HEIGHT = 600
+
+# Quadtree.
+CAPACITY = 4
+DRAW_RECT = True
 
 # Colors. (to remove when sprites are implemented)
 BACKGROUND_COLOR = "light grey"
@@ -32,7 +36,7 @@ BULLET_SPEED = 2
 WEAPON_DELAY = 100
 
 # Spawn stats.
-SPAWN_DELAY = 200
+SPAWN_DELAY = 100
 SPAWN_RANGE = 400
 SAFE_DISTANCE = 200
 DIAMOND_SPAWN_CHANCE = 50

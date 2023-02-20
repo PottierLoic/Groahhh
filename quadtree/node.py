@@ -68,3 +68,12 @@ class Node:
             self.northwest.query(range, found)
             self.southeast.query(range, found)
             self.southwest.query(range, found)
+
+    def draw(self, canvas):
+        """Draw the node."""
+        self.boundary.draw(canvas)
+        if self.divided:
+            self.northeast.draw(canvas)
+            self.northwest.draw(canvas)
+            self.southeast.draw(canvas)
+            self.southwest.draw(canvas)

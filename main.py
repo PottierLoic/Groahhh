@@ -16,6 +16,10 @@ from game import Game
 
 def graphics():
     canvas.delete("all")
+    x_offset = -game.player.x
+    y_offset = -game.player.y
+    if DRAW_RECT:
+        game.quadtree.draw(canvas)
     if game.state == "menu":
         canvas.create_rectangle(WIDTH/2 - 200, HEIGHT/2 - 100, WIDTH/2 + 200, HEIGHT/2 + 100, fill="grey")
         canvas.create_text(WIDTH/2, HEIGHT/2, text=" ", font="Arial 50", fill="black")

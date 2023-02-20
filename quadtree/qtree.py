@@ -21,3 +21,7 @@ class QuadTree:
     def query(self, range, found):
         """Query the QuadTree."""
         self.root.query(range, found)
+
+    def draw(self, canvas):
+        """Draw the QuadTree."""
+        self.root.draw(canvas)
