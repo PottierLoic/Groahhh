@@ -20,6 +20,7 @@ ZOMBIE_SIZE = 50
 BULLET_SIZE = 2
 DIAMOND_SIZE = 12
 CHEST_SIZE = 15
+FIREBALL_SIZE = 16
 
 # Animation speed.
 ANIMATION_SPEED = 30
@@ -29,10 +30,13 @@ DELAY = 1
 
 # Basic bullet stats.
 FALL_DISTANCE = 200
-BULLET_SPEED = 2
-
-# Basic weapon stats.
+BULLET_SPEED = 1
 WEAPON_DELAY = 100
+
+# Fireball stats.
+FALL_DISTANCE_FIREBALL = 400
+FIREBALL_SPEED = 1
+FIREBALL_DELAY = 1000
 
 # Spawn stats.
 SPAWN_DELAY = 100
@@ -53,7 +57,7 @@ EXPERIENCE_AMOUNT = [40, 60, 100, 150, 210, 280, 700, 800, 900, 100000]
 ROUNDS_SPAWNS = [20, 40, 60, 100, 150]
 
 # Chests
-REWARD_POOL = ["orb", "wand", "aura", "laser", "meteor"]
+REWARD_POOL = ["orb", "wand", "aura", "fireball", "meteor"]
 
 # Orb stats.
 ORB_REVOLUTION_RADIUS = 80

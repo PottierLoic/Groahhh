@@ -63,12 +63,13 @@ class Game():
     def update(self):
         """Update the game."""
         if self.state == "running":
-            # Position updates
+            # Position and animation updates
             self.player.update()
             for monster in self.monsters:
                 monster.update(self.player)
             for chest in self.chests:
                 chest.update()
+            
 
             # Filling the quadtree
             self.quadtree = QuadTree(Rect(self.player.x, self.player.y, WIDTH, HEIGHT), CAPACITY)
@@ -138,6 +139,15 @@ class Game():
                     if obj.tag == "monster":
                         if math.sqrt((orb.x - obj.x)**2 + (orb.y - obj.y)**2) < ORB_RADIUS/2 + ZOMBIE_SIZE/2:
                             obj.health -= 100
+
+            # Fireball collision check
+            for fireball in self.player.fireballs:
+                self.quadtree.query(Rect(fireball.x, fireball.y, FIREBALL_SIZE, FIREBALL_SIZE), nearby)
+                for obj in nearby:
+                    if obj.tag == "monster":
+                        if math.sqrt((fireball.x - obj.x)**2 + (fireball.y - obj.y)**2) < FIREBALL_SIZE/2 + ZOMBIE_SIZE/2:
+                            obj.health -= 50
+                            fireball.health -= 50
 
             # Monster spawn
             if self.spawnLeft <= 0 and self.bossSpawned == False:

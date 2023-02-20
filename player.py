@@ -12,6 +12,7 @@ import math
 from constants import *
 from bullet import Bullet
 from orb import Orb 
+from fireball import Fireball
 
 class Player:
 
@@ -57,9 +58,10 @@ class Player:
         self.bullets = []
         self.orbs = []
         self.meteors = []
+        self.fireballs = []
 
         self.fireDelay = 0
-        self.addedProjectiles = 1
+        self.addedProjectiles = 0
         
         self.haveWand = True
         self.wandLevel = 1
@@ -75,8 +77,9 @@ class Player:
         self.haveAura = False
         self.auraLevel = 0
 
-        self.haveLaser = False
-        self.laserLevel = 0
+        self.haveFireball = False
+        self.fireballLevel = 1
+        self.fireballDelay = 0
 
     def update(self):
         """Update the player position and status."""
@@ -91,11 +94,13 @@ class Player:
         if self.haveWand: self.wand()
         if self.haveAura: self.aura()
         if self.haveOrb: self.orb()
-        if self.haveLaser: self.laser()
+        if self.haveFireball: self.fireball()
         if self.haveMeteor: self.meteor()
         
         for bullet in self.bullets:
             bullet.move()
+        for fireball in self.fireballs:
+            fireball.update()
         
         # Movement
         if self.left: self.x -= 1 * self.speed
@@ -124,8 +129,15 @@ class Player:
     def meteor(self):
         pass
 
-    def laser(self):
-        pass
+    def fireball(self):
+        """Shoot a fireball."""
+        if self.fireballDelay <= 0:
+            for i in range(self.fireballLevel):
+                randomDirection = (math.cos(random.randint(0, 20)), math.sin(random.randint(0, 20)))
+                self.fireballs.append(Fireball(self, randomDirection))
+            self.fireballDelay = FIREBALL_DELAY
+        else:
+            self.fireballDelay -= self.fireballLevel
 
     def orb(self):
         """Calculate all orb positions"""
@@ -161,9 +173,9 @@ class Player:
             case "meteor":
                 self.meteorLevel += 1
                 if not self.haveMeteor : self.haveMeteor = True
-            case "laser":
-                self.laserLevel += 1
-                if not self.haveLaser : self.haveLaser = True
+            case "fireball":
+                self.fireballLevel += 1
+                if not self.haveFireball : self.haveFireball = True
             case "aura":
                 self.auraLevel += 1
                 if not self.haveAura : self.haveAura = True
