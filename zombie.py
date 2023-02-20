@@ -9,6 +9,7 @@ import random
 
 # Local libraries.
 from constants import *
+from diamond import Diamond
 
 class Zombie:
     def __init__(self, parent) -> None:
@@ -20,6 +21,7 @@ class Zombie:
         """
         self.parent = parent
         self.health = 40
+        self.tag = "zombie"
 
         if random.randrange(2) == 0:
             x1 = random.randint(self.parent.player.x - SPAWN_RANGE, self.parent.player.x - SAFE_DISTANCE)
@@ -50,6 +52,8 @@ class Zombie:
             self.animationDelay = 0
 
         if self.health <= 0:
+            if random.randrange(100) > DIAMOND_SPAWN_CHANCE:
+                self.parent.diamonds.append(Diamond(self.x, self.y))
             self.parent.zombies.remove(self)
 
         distx = abs(player.x - self.x)

@@ -20,22 +20,33 @@ class Player:
                 x (int): The x position of the player.
                 y (int): The y position of the player.
         """
+        self.tag = "player"
+
+        # Position attributes.
         self.x = x
         self.y = y
         self.direction = (0, 0)
         
+        # Health attributes.
         self.maxHealth = 200
         self.health = 200
+
+        # Level attributes.
+        self.level = 1
+        self.exp = 0
     
+        # Movement attributes.
         self.left = False
         self.right = False
         self.up = False
         self.down = False
-        self.fire = False
+
+        # Animation attributes.
         self.animation = 0
         self.animationDelay = 0
         self.moving = False
 
+        # Weapon attributes.
         self.bullets = []
         self.fireDelay = 0
 
@@ -47,7 +58,7 @@ class Player:
             self.animation = (self.animation + 1) % 4
             self.animationDelay = 0
 
-        if self.fire: self.shoot()
+        self.shoot()
 
         for bullet in self.bullets:
             bullet.move()
@@ -56,6 +67,10 @@ class Player:
         if self.right: self.x += 1
         if self.up: self.y -= 1
         if self.down: self.y += 1
+
+        if self.exp >= EXPERIENCE_AMOUNT[self.level-1]:
+            self.level += 1
+            self.exp = 0
         
     def shoot(self):
         """

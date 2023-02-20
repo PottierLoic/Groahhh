@@ -24,6 +24,7 @@ class Bullet:
         self.y = self.parent.y
         self.life = FALL_DISTANCE
         self.direction = direction
+        self.tag = "bullet"
 
 
     def move(self):
