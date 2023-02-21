@@ -11,6 +11,8 @@ import random
 from constants import *
 from interactibles.diamond import Diamond
 from interactibles.chest import Chest
+from interactibles.food import Food
+from interactibles.magnet import Magnet
 
 class Monster:
     """Abstract monster class, all monsters in the game inherit from it, even bosses"""
@@ -39,7 +41,7 @@ class Monster:
         self.animationDelay = 0
         self.animation = 0
 
-        # Position outside of the safe zone.
+        # Set spawn position outside of the safe zone.
         if random.randrange(2) == 0:
             x1 = random.uniform(self.parent.player.x - SPAWN_RANGE, self.parent.player.x - SAFE_DISTANCE)
             x2 = random.uniform(self.parent.player.x + SAFE_DISTANCE, self.parent.player.x + SPAWN_RANGE)
@@ -70,8 +72,15 @@ class Monster:
             if self.boss:
                 self.parent.chests.append(Chest(self.parent, self.x, self.y))
             else:
-                if random.randrange(100) > DIAMOND_SPAWN_CHANCE:
+                range = random.randrange(100)
+                if range < DIAMOND_SPAWN_CHANCE:
                     self.parent.diamonds.append(Diamond(self.x, self.y))
+                if range < FOOD_SPAWN_CHANCE:
+                    self.parent.foods.append(Food(self.x, self.y))
+                if range < CHEST_SPAWN_CHANCE:
+                    self.parent.chests.append(Chest(self.parent, self.x, self.y))
+                if range < MAGNET_SPAWN_CHANCE:
+                    self.parent.magnets.append(Magnet(self.x, self.y))
             self.parent.monsters.remove(self)
 
         # Move in the player direction

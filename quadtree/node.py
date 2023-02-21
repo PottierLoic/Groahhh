@@ -9,7 +9,13 @@ from quadtree.rect import Rect
 
 class Node:
     def __init__(self, boundary, capacity) -> None:
-        """Initialize the Node."""
+        """
+        Initialize the Node.
+        
+            Args:
+                boundary (Rect): Rectangle that represents the area we want to cover with the tree
+                capacity (int): maximum number of objects a node can contain without subdividing
+        """
         self.boundary = boundary
         self.capacity = capacity
         self.points = []
@@ -34,7 +40,15 @@ class Node:
         self.divided = True
 
     def insert(self, point):
-        """Insert a point in the node."""
+        """
+        Insert a point in the node.
+        
+            Args:
+                point (Object): the object we want to insert in the node.
+            
+            Returns:
+                False if it can't contain the point, else returns True and add the point to a node
+        """
         if not self.boundary.contains(point):
             return False
 
@@ -55,7 +69,13 @@ class Node:
                 return True
 
     def query(self, range, found):
-        """Query the node."""
+        """
+        Query the node.
+        
+            Args:
+                range (Rect): rectangle object that represents the zone we want to check
+                found (list): list that will be filled with all the objects found
+        """
         if not self.boundary.intersects(range):
             return
 
@@ -70,7 +90,13 @@ class Node:
             self.southwest.query(range, found)
 
     def draw(self, canvas, xoffset=0, yoffset=0):
-        """Draw the node."""
+        """
+        Draw the node.
+        
+            Args:
+                canvas (Canvas): canvas where we want the rectangles to be drawed.
+                xoffset, yoffset (int): offset needed for the canvas to display in the center of the screen.
+        """
         self.boundary.draw(canvas, xoffset, yoffset)
         if self.divided:
             self.northeast.draw(canvas, xoffset, yoffset)

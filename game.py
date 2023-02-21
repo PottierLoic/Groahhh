@@ -38,6 +38,8 @@ class Game():
         self.zombies = []
         self.diamonds = []
         self.chests = []
+        self.foods = []
+        self.magnets = []
 
         # Game states
         self.state = "menu"
@@ -48,6 +50,7 @@ class Game():
         self.spawnDelay = SPAWN_DELAY
         self.rewardQueue = []
         self.rewardPool = REWARD_POOL
+        self.magnetDelay = 0
 
         # quadtree (used for optimization).
         self.quadtree = QuadTree(Rect(0, 0, WIDTH, HEIGHT), CAPACITY)
@@ -56,7 +59,7 @@ class Game():
         """Start the game."""
         self.state = "running"
         self.monsters = []
-        self.round = 5
+        self.round = 1
 
     def reset(self):
         """Reset the game."""
@@ -73,6 +76,10 @@ class Game():
             for chest in self.chests:
                 chest.update()
             
+            if self.magnetDelay > 0:
+                self.magnetDelay -= 1
+                for diamond in self.diamonds:
+                    diamond.magnet(self.player)
 
             # Filling the quadtree
             self.quadtree = QuadTree(Rect(self.player.x, self.player.y, WIDTH, HEIGHT), CAPACITY)
@@ -82,6 +89,10 @@ class Game():
                 self.quadtree.insert(diamond)
             for chest in self.chests:
                 self.quadtree.insert(chest)
+            for food in self.foods:
+                self.quadtree.insert(food)
+            for magnet in self.magnets:
+                self.quadtree.insert(magnet)
             
             # Player collision
             monsterToAim = []
@@ -105,6 +116,15 @@ class Game():
                                 self.rewardQueue.append([obj.reward, None])
                                 self.chooseReward(0)
                                 obj.open()
+                elif obj.tag == "food":
+                    if math.sqrt((self.player.x - obj.x)**2 + (self.player.y - obj.y)**2) < PLAYER_HITBOX + FOOD_SIZE/2:
+                        self.player.health += obj.value
+                        if self.player.health > self.player.maxHealth: self.player.health = self.player.maxHealth
+                        self.foods.remove(obj)
+                elif obj.tag == "magnet":
+                    if math.sqrt((self.player.x - obj.x)**2 + (self.player.y - obj.y)**2) < PLAYER_HITBOX + MAGNET_SIZE/2:
+                        self.magnetDelay = MAGNET_DURATION
+                        self.magnets.remove(obj)
 
             # Updating player direction to the nearest monster
             self.quadtree.query(Rect(self.player.x, self.player.y, 150, 150), nearby)

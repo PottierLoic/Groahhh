@@ -31,6 +31,7 @@ class Fireball:
         self.animationDelay = 0
     
     def update(self):
+        """Update fireball animationFrame"""
         # Animation frame change
         self.move()
         if self.animationDelay < ANIMATION_SPEED:

@@ -12,6 +12,13 @@ from constants import *
 
 class Aura:
     def __init__(self, x, y, speed) -> None:
+        """
+        Initialize the aura.
+
+            Args:
+                x, y (int): Player position, aura and player have the same.
+                speed (int): Damage are applied to enemies at this speed.
+        """
         self.x = x
         self.y = y
         self.radius = 100
@@ -21,6 +28,13 @@ class Aura:
         self.damageSpeed = speed
 
     def update(self, x, y, speed):
+        """
+        Update the aura.
+        
+            Args:
+                x, y (int): new player position.
+                speed: new aura speed.
+        """
         self.speed = speed
         if self.animationDelay < AURA_ANIMATION_SPEED:
             self.animationDelay += 1

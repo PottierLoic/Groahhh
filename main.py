@@ -6,7 +6,6 @@ Groahhh game.
 
 # Basic libraries.
 from tkinter import *
-import math
 from PIL import Image, ImageTk
 import time
 
@@ -22,8 +21,11 @@ def graphics():
         game.quadtree.draw(canvas, xoffset, yoffset)
     if game.state == "menu":
         canvas.create_rectangle(WIDTH/2 - 200, HEIGHT/2 - 100, WIDTH/2 + 200, HEIGHT/2 + 100, fill="grey")
-        canvas.create_text(WIDTH/2, HEIGHT/2, text=" Groahhh ", font="Arial 50", fill="black")
+        canvas.create_text(WIDTH/2, HEIGHT/2, text="", font="Arial 50", fill="black")
     elif game.state in ("running", "reward"):
+        # Aura display
+        if game.player.auras != None:
+            canvas.create_image(game.player.auras.x - xoffset, game.player.auras.y - yoffset, image=auraImg[game.player.auras.animation], anchor="center")
         # Player animation sprite choice and display
         direct = 0
         if game.player.left: direct = 1
@@ -32,6 +34,14 @@ def graphics():
         else:
             img = playerIdleImg[direct][game.player.animation]
         canvas.create_image(game.player.x - xoffset, game.player.y - yoffset, image=img, anchor="center")
+        # Food display
+        for food in game.foods:
+            if abs(game.player.x - food.x) < WIDTH and abs(game.player.y - food.y) < HEIGHT:
+                canvas.create_image(food.x - xoffset, food.y - yoffset, image=foodImg[food.animation], anchor="center")
+        # Magnet display
+        for magnet in game.magnets:
+            if abs(game.player.x - magnet.x) < WIDTH and abs(game.player.y - magnet.y) < HEIGHT:
+                canvas.create_image(magnet.x - xoffset, magnet.y - yoffset, image=magnetImg, anchor="center")
         # Monster display.
         for monster in game.monsters:
             if abs(game.player.x - monster.x) < WIDTH and abs(game.player.y - monster.y) < HEIGHT:
@@ -56,6 +66,16 @@ def graphics():
                         img = orcBigImg[turn][monster.animation]
                     case "pigBig":
                         img = pigBigImg[turn][monster.animation]
+                    case "knight":
+                        img = knightImg[turn][monster.animation]
+                    case "samourai":
+                        img = samouraiImg[turn][monster.animation]
+                    case "wizarda":
+                        img = wizardaImg[turn][monster.animation]
+                    case "wizardb":
+                        img = wizardbImg[turn][monster.animation]
+                    case "wizardc":
+                        img = wizardcImg[turn][monster.animation]
                 canvas.create_image(monster.x - xoffset, monster.y - yoffset, image=img, anchor="center")
         # Diamond display
         for diamond in game.diamonds:
@@ -73,10 +93,13 @@ def graphics():
             canvas.create_oval(bullet.x - BULLET_SIZE - xoffset, bullet.y - BULLET_SIZE - yoffset, bullet.x + BULLET_SIZE - xoffset, bullet.y + BULLET_SIZE - yoffset, fill="black")
         # Orbs sprite display
         for orb in game.player.orbs:
-            canvas.create_image(orb.x - xoffset, orb.y - yoffset, image=orbImg, anchor="center")
+            canvas.create_image(orb.x - xoffset, orb.y - yoffset, image=orbImg[game.player.orbAnimation], anchor="center")
         # Fireball sprite display
         for fireball in game.player.fireballs:
             canvas.create_image(fireball.x - xoffset, fireball.y - yoffset, image=fireballImg[fireball.animation], anchor="center")
+        # Meteor display
+        for meteor in game.player.meteors:
+            canvas.create_image(meteor.x - xoffset, meteor.y - yoffset, image=meteorImg[meteor.animation], anchor="center")
         # Health bar display.
         health_ratio = game.player.health/game.player.maxHealth
         canvas.create_rectangle(game.player.x - 20 - xoffset, game.player.y + 20 - yoffset, game.player.x + 20 - xoffset, game.player.y + 25 - yoffset, fill="black")
@@ -153,15 +176,20 @@ def click():
             game.chooseReward(2)
  
 def update():
-    global frameRate
-    time1 = time.time()
-    graphics()
-    game.update()
-    time2 = time.time()
-    try:
-        frameRate = 1/(time2-time1)
-    except ZeroDivisionError:
-        pass
+    global prevTime, lastTime, frameRate, refresh
+    if prevTime < PHYSICS_REFRESH_RATE:
+        prevTime += time.time() - lastTime
+    else:
+        time1 = time.time()
+        graphics()
+        game.update()
+        prevTime = 0
+        time2 = time.time()
+        try:
+            frameRate = 1/(time2-time1)
+        except ZeroDivisionError:
+            pass
+    lastTime = time.time()
     window.after(DELAY, update)
 
 def rectDisplay():
@@ -176,7 +204,10 @@ if __name__ == "__main__":
     mousey = 0
     direction = 0
     frameRate = 10
+    prevTime = 0
+    lastTime = 0
     quadTreeDisplay = True
+    refresh = 0
     
     # Game creation.
     game = Game()
@@ -404,7 +435,7 @@ if __name__ == "__main__":
                     ImageTk.PhotoImage(Image.open("img/pig/pig_10.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
                     ImageTk.PhotoImage(Image.open("img/pig/pig_11.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT))]]
 
-    pigBigImg = [[ImageTk.PhotoImage(Image.open("img/pigBig/pigBig_0.png")),
+    pigBigImg = [[ImageTk.PhotoImage(Image.open("img/pigBig/pigBig_0.png")),    
                     ImageTk.PhotoImage(Image.open("img/pigBig/pigBig_1.png")),
                     ImageTk.PhotoImage(Image.open("img/pigBig/pigBig_2.png")),
                     ImageTk.PhotoImage(Image.open("img/pigBig/pigBig_3.png")),
@@ -435,13 +466,193 @@ if __name__ == "__main__":
                 ImageTk.PhotoImage(Image.open("img/chest/chest_1.png")),
                 ImageTk.PhotoImage(Image.open("img/chest/chest_2.png"))]
 
-    orbImg = [ImageTk.PhotoImage(Image.open("img/orb/orb.png"))]
+    orbImg = [ImageTk.PhotoImage(Image.open("img/orb/orb_0.png")),
+              ImageTk.PhotoImage(Image.open("img/orb/orb_1.png")),
+              ImageTk.PhotoImage(Image.open("img/orb/orb_2.png")),
+              ImageTk.PhotoImage(Image.open("img/orb/orb_3.png")),
+              ImageTk.PhotoImage(Image.open("img/orb/orb_4.png")),
+              ImageTk.PhotoImage(Image.open("img/orb/orb_5.png")),
+              ImageTk.PhotoImage(Image.open("img/orb/orb_6.png"))]
 
     fireballImg = [ImageTk.PhotoImage(Image.open("img/fireball/fireball_0.png")),
                     ImageTk.PhotoImage(Image.open("img/fireball/fireball_1.png")),
                     ImageTk.PhotoImage(Image.open("img/fireball/fireball_2.png")),
                     ImageTk.PhotoImage(Image.open("img/fireball/fireball_3.png"))]
 
+    auraImg = [ImageTk.PhotoImage(Image.open("img/aura/1_2.png").resize((200, 200))),
+               ImageTk.PhotoImage(Image.open("img/aura/1_4.png").resize((200, 200))),
+               ImageTk.PhotoImage(Image.open("img/aura/1_6.png").resize((200, 200))),
+               ImageTk.PhotoImage(Image.open("img/aura/1_8.png").resize((200, 200))),
+               ImageTk.PhotoImage(Image.open("img/aura/1_10.png").resize((200, 200))),
+               ImageTk.PhotoImage(Image.open("img/aura/1_12.png").resize((200, 200))),
+               ImageTk.PhotoImage(Image.open("img/aura/1_14.png").resize((200, 200))),
+               ImageTk.PhotoImage(Image.open("img/aura/1_16.png").resize((200, 200))),
+               ImageTk.PhotoImage(Image.open("img/aura/1_18.png").resize((200, 200))),
+               ImageTk.PhotoImage(Image.open("img/aura/1_20.png").resize((200, 200))),
+               ImageTk.PhotoImage(Image.open("img/aura/1_22.png").resize((200, 200))),
+               ImageTk.PhotoImage(Image.open("img/aura/1_24.png").resize((200, 200))),
+               ImageTk.PhotoImage(Image.open("img/aura/1_26.png").resize((200, 200))),
+               ImageTk.PhotoImage(Image.open("img/aura/1_28.png").resize((200, 200))),
+               ImageTk.PhotoImage(Image.open("img/aura/1_30.png").resize((200, 200))),
+               ImageTk.PhotoImage(Image.open("img/aura/1_32.png").resize((200, 200))),
+               ImageTk.PhotoImage(Image.open("img/aura/1_34.png").resize((200, 200))),
+               ImageTk.PhotoImage(Image.open("img/aura/1_36.png").resize((200, 200))),
+               ImageTk.PhotoImage(Image.open("img/aura/1_38.png").resize((200, 200))),
+               ImageTk.PhotoImage(Image.open("img/aura/1_40.png").resize((200, 200))),
+               ImageTk.PhotoImage(Image.open("img/aura/1_42.png").resize((200, 200))),
+               ImageTk.PhotoImage(Image.open("img/aura/1_44.png").resize((200, 200))),
+               ImageTk.PhotoImage(Image.open("img/aura/1_46.png").resize((200, 200))),
+               ImageTk.PhotoImage(Image.open("img/aura/1_48.png").resize((200, 200))),
+               ImageTk.PhotoImage(Image.open("img/aura/1_50.png").resize((200, 200))),
+               ImageTk.PhotoImage(Image.open("img/aura/1_52.png").resize((200, 200))),
+               ImageTk.PhotoImage(Image.open("img/aura/1_54.png").resize((200, 200))),
+               ImageTk.PhotoImage(Image.open("img/aura/1_56.png").resize((200, 200))),
+               ImageTk.PhotoImage(Image.open("img/aura/1_58.png").resize((200, 200)))]
+    
+    meteorImg = [ImageTk.PhotoImage(Image.open("img/meteor/meteor_0.png")),
+                 ImageTk.PhotoImage(Image.open("img/meteor/meteor_1.png")),
+                 ImageTk.PhotoImage(Image.open("img/meteor/meteor_2.png")),
+                 ImageTk.PhotoImage(Image.open("img/meteor/meteor_3.png")),
+                 ImageTk.PhotoImage(Image.open("img/meteor/meteor_4.png")),
+                 ImageTk.PhotoImage(Image.open("img/meteor/meteor_5.png")),
+                 ImageTk.PhotoImage(Image.open("img/meteor/meteor_6.png")),
+                 ImageTk.PhotoImage(Image.open("img/meteor/meteor_7.png")),
+                 ImageTk.PhotoImage(Image.open("img/meteor/meteor_8.png")),
+                 ImageTk.PhotoImage(Image.open("img/meteor/meteor_9.png")),
+                 ImageTk.PhotoImage(Image.open("img/meteor/meteor_10.png"))]
+
+    knightImg = [[ImageTk.PhotoImage(Image.open("img/knight/knight_0.png")),
+                    ImageTk.PhotoImage(Image.open("img/knight/knight_1.png")),
+                    ImageTk.PhotoImage(Image.open("img/knight/knight_2.png")),
+                    ImageTk.PhotoImage(Image.open("img/knight/knight_3.png")),
+                    ImageTk.PhotoImage(Image.open("img/knight/knight_4.png")),
+                    ImageTk.PhotoImage(Image.open("img/knight/knight_5.png")),
+                    ImageTk.PhotoImage(Image.open("img/knight/knight_6.png")),
+                    ImageTk.PhotoImage(Image.open("img/knight/knight_7.png")),
+                    ImageTk.PhotoImage(Image.open("img/knight/knight_8.png")),
+                    ImageTk.PhotoImage(Image.open("img/knight/knight_9.png")),
+                    ImageTk.PhotoImage(Image.open("img/knight/knight_10.png")),
+                    ImageTk.PhotoImage(Image.open("img/knight/knight_11.png"))],
+                    [ImageTk.PhotoImage(Image.open("img/knight/knight_0.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/knight/knight_1.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/knight/knight_2.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/knight/knight_3.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/knight/knight_4.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/knight/knight_5.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/knight/knight_6.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/knight/knight_7.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/knight/knight_8.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/knight/knight_9.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/knight/knight_10.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/knight/knight_11.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT))]]
+
+    samouraiImg = [[ImageTk.PhotoImage(Image.open("img/samourai/samourai_0.png")),
+                    ImageTk.PhotoImage(Image.open("img/samourai/samourai_1.png")),
+                    ImageTk.PhotoImage(Image.open("img/samourai/samourai_2.png")),
+                    ImageTk.PhotoImage(Image.open("img/samourai/samourai_3.png")),
+                    ImageTk.PhotoImage(Image.open("img/samourai/samourai_4.png")),
+                    ImageTk.PhotoImage(Image.open("img/samourai/samourai_5.png")),
+                    ImageTk.PhotoImage(Image.open("img/samourai/samourai_6.png")),
+                    ImageTk.PhotoImage(Image.open("img/samourai/samourai_7.png")),
+                    ImageTk.PhotoImage(Image.open("img/samourai/samourai_8.png")),
+                    ImageTk.PhotoImage(Image.open("img/samourai/samourai_9.png")),
+                    ImageTk.PhotoImage(Image.open("img/samourai/samourai_10.png")),
+                    ImageTk.PhotoImage(Image.open("img/samourai/samourai_11.png"))],
+                    [ImageTk.PhotoImage(Image.open("img/samourai/samourai_0.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/samourai/samourai_1.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/samourai/samourai_2.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/samourai/samourai_3.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/samourai/samourai_4.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/samourai/samourai_5.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/samourai/samourai_6.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/samourai/samourai_7.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/samourai/samourai_8.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/samourai/samourai_9.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/samourai/samourai_10.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/samourai/samourai_11.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT))]]
+
+    wizardaImg = [[ImageTk.PhotoImage(Image.open("img/wizardA/wizardA_0.png")),
+                    ImageTk.PhotoImage(Image.open("img/wizardA/wizardA_1.png")),
+                    ImageTk.PhotoImage(Image.open("img/wizardA/wizardA_2.png")),
+                    ImageTk.PhotoImage(Image.open("img/wizardA/wizardA_3.png")),
+                    ImageTk.PhotoImage(Image.open("img/wizardA/wizardA_4.png")),
+                    ImageTk.PhotoImage(Image.open("img/wizardA/wizardA_5.png")),
+                    ImageTk.PhotoImage(Image.open("img/wizardA/wizardA_6.png")),
+                    ImageTk.PhotoImage(Image.open("img/wizardA/wizardA_7.png")),
+                    ImageTk.PhotoImage(Image.open("img/wizardA/wizardA_8.png")),
+                    ImageTk.PhotoImage(Image.open("img/wizardA/wizardA_9.png")),
+                    ImageTk.PhotoImage(Image.open("img/wizardA/wizardA_10.png")),
+                    ImageTk.PhotoImage(Image.open("img/wizardA/wizardA_11.png"))],
+                    [ImageTk.PhotoImage(Image.open("img/wizardA/wizardA_0.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/wizardA/wizardA_1.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/wizardA/wizardA_2.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/wizardA/wizardA_3.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/wizardA/wizardA_4.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/wizardA/wizardA_5.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/wizardA/wizardA_6.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/wizardA/wizardA_7.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/wizardA/wizardA_8.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/wizardA/wizardA_9.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/wizardA/wizardA_10.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/wizardA/wizardA_11.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT))]]
+
+    wizardbImg = [[ImageTk.PhotoImage(Image.open("img/wizardB/wizardB_0.png")),
+                    ImageTk.PhotoImage(Image.open("img/wizardB/wizardB_1.png")),
+                    ImageTk.PhotoImage(Image.open("img/wizardB/wizardB_2.png")),
+                    ImageTk.PhotoImage(Image.open("img/wizardB/wizardB_3.png")),
+                    ImageTk.PhotoImage(Image.open("img/wizardB/wizardB_4.png")),
+                    ImageTk.PhotoImage(Image.open("img/wizardB/wizardB_5.png")),
+                    ImageTk.PhotoImage(Image.open("img/wizardB/wizardB_6.png")),
+                    ImageTk.PhotoImage(Image.open("img/wizardB/wizardB_7.png")),
+                    ImageTk.PhotoImage(Image.open("img/wizardB/wizardB_8.png")),
+                    ImageTk.PhotoImage(Image.open("img/wizardB/wizardB_9.png")),
+                    ImageTk.PhotoImage(Image.open("img/wizardB/wizardB_10.png")),
+                    ImageTk.PhotoImage(Image.open("img/wizardB/wizardB_11.png"))],
+                    [ImageTk.PhotoImage(Image.open("img/wizardB/wizardB_0.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/wizardB/wizardB_1.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/wizardB/wizardB_2.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/wizardB/wizardB_3.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/wizardB/wizardB_4.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/wizardB/wizardB_5.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/wizardB/wizardB_6.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/wizardB/wizardB_7.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/wizardB/wizardB_8.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/wizardB/wizardB_9.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/wizardB/wizardB_10.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/wizardB/wizardB_11.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT))]]
+    
+    wizardcImg = [[ImageTk.PhotoImage(Image.open("img/wizardC/wizardC_0.png")),
+                    ImageTk.PhotoImage(Image.open("img/wizardC/wizardC_1.png")),
+                    ImageTk.PhotoImage(Image.open("img/wizardC/wizardC_2.png")),
+                    ImageTk.PhotoImage(Image.open("img/wizardC/wizardC_3.png")),
+                    ImageTk.PhotoImage(Image.open("img/wizardC/wizardC_4.png")),
+                    ImageTk.PhotoImage(Image.open("img/wizardC/wizardC_5.png")),
+                    ImageTk.PhotoImage(Image.open("img/wizardC/wizardC_6.png")),
+                    ImageTk.PhotoImage(Image.open("img/wizardC/wizardC_7.png")),
+                    ImageTk.PhotoImage(Image.open("img/wizardC/wizardC_8.png")),
+                    ImageTk.PhotoImage(Image.open("img/wizardC/wizardC_9.png")),
+                    ImageTk.PhotoImage(Image.open("img/wizardC/wizardC_10.png")),
+                    ImageTk.PhotoImage(Image.open("img/wizardC/wizardC_11.png"))],
+                    [ImageTk.PhotoImage(Image.open("img/wizardC/wizardC_0.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/wizardC/wizardC_1.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/wizardC/wizardC_2.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/wizardC/wizardC_3.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/wizardC/wizardC_4.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/wizardC/wizardC_5.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/wizardC/wizardC_6.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/wizardC/wizardC_7.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/wizardC/wizardC_8.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/wizardC/wizardC_9.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/wizardC/wizardC_10.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT)),
+                    ImageTk.PhotoImage(Image.open("img/wizardC/wizardC_11.png").transpose(Image.Transpose.FLIP_LEFT_RIGHT))]]
+
+    foodImg = [ImageTk.PhotoImage(Image.open("img/food/0.png")),
+            ImageTk.PhotoImage(Image.open("img/food/1.png")),
+            ImageTk.PhotoImage(Image.open("img/food/2.png")),
+            ImageTk.PhotoImage(Image.open("img/food/3.png")),
+            ImageTk.PhotoImage(Image.open("img/food/4.png"))]
+
+    magnetImg = ImageTk.PhotoImage(Image.open("img/magnet/magnet.png"))
 
     # Main loop.
     update()

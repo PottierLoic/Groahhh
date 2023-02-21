@@ -69,10 +69,10 @@ class Player:
         self.haveWand = True
         self.wandLevel = 1
 
-        self.haveOrb = False
+        self.haveOrb = True
         self.orbSpeed = 0.006
         self.orbAngle = 0
-        self.orbLevel = 0
+        self.orbLevel = 50
         self.orbAnimation = 0
         self.orbAnimationDelay = 0
 
