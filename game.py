@@ -44,9 +44,6 @@ class Game():
         self.rewardQueue = []
         self.rewardPool = REWARD_POOL
 
-        self.width = WIDTH
-        self.height = HEIGHT
-
         # quadtree (used for optimization).
         self.quadtree = QuadTree(Rect(0, 0, WIDTH, HEIGHT), CAPACITY)
 

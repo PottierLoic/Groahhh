@@ -34,7 +34,7 @@ def graphics():
         canvas.create_image(game.player.x - xoffset, game.player.y - yoffset, image=img, anchor="center")
         # Monster display.
         for monster in game.monsters:
-            if abs(game.player.x - monster.x - xoffset) < WIDTH and abs(game.player.y - monster.y - yoffset) < HEIGHT:
+            if abs(game.player.x - monster.x) < WIDTH and abs(game.player.y - monster.y) < HEIGHT:
                 # monster animation sprite choice and display
                 turn = 0
                 if monster.tag != "player":
@@ -183,6 +183,7 @@ if __name__ == "__main__":
 
     # Tkinter section.
     window = Tk()
+    #window.attributes("-fullscreen", True)
     window.title("Groahhh")
 
     canvas = Canvas(window, bg=BACKGROUND_COLOR, height=HEIGHT, width=WIDTH)
