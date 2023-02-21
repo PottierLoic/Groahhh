@@ -9,10 +9,11 @@ import random
 
 # Local libraries.
 from constants import *
-from diamond import Diamond
-from chest import Chest
+from interactibles.diamond import Diamond
+from interactibles.chest import Chest
 
 class Monster:
+    """Abstract monster class, all monsters in the game inherit from it, even bosses"""
     def __init__(self, parent) -> None:
         """
         Initialize the monster.

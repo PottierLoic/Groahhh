@@ -19,6 +19,11 @@ from monsters.orc import Orc
 from monsters.orcBig import OrcBig
 from monsters.pig import Pig
 from monsters.pigBig import PigBig
+from monsters.knight import Knight
+from monsters.samourai import Samourai
+from monsters.wizarda import WizardA
+from monsters.wizardb import WizardB
+from monsters.wizardc import WizardC
 
 from quadtree.qtree import QuadTree
 from quadtree.rect import Rect
@@ -51,7 +56,7 @@ class Game():
         """Start the game."""
         self.state = "running"
         self.monsters = []
-        self.round = 1
+        self.round = 5
 
     def reset(self):
         """Reset the game."""
@@ -61,6 +66,7 @@ class Game():
         """Update the game."""
         if self.state == "running":
             # Position and animation updates
+            self.player.exp += 1
             self.player.update()
             for monster in self.monsters:
                 monster.update(self.player)
@@ -115,14 +121,14 @@ class Game():
                 angle = math.atan2(miny - self.player.y, minx - self.player.x)
                 self.player.direction = (math.cos(angle), math.sin(angle))
             else:
-                self.player.direction = (math.cos(random.randint(0, 3)), math.sin(random.randint(0, 3)))
+                self.player.direction = (math.cos(random.uniform(0, 2*math.pi)), math.sin(random.uniform(0, 2*math.pi)))
 
             # Bullet collision check.
             for bullet in self.player.bullets:
-                self.quadtree.query(Rect(bullet.x, bullet.y, 10, 10), nearby)
+                self.quadtree.query(Rect(bullet.x, bullet.y, 5, 5), nearby)
                 for obj in nearby:
                     if obj.tag == "monster":
-                        if math.sqrt((bullet.x - obj.x)**2 + (bullet.y - obj.y)**2) < BULLET_SIZE/2 + ZOMBIE_SIZE/2:
+                        if math.sqrt((bullet.x - obj.x)**2 + (bullet.y - obj.y)**2) < ZOMBIE_SIZE/2:
                             obj.health -= 10
                             try:
                                 self.player.bullets.remove(bullet)
@@ -146,6 +152,24 @@ class Game():
                             obj.health -= 50
                             fireball.health -= 50
 
+            # Aura collision check
+            if self.player.auras:
+                if self.player.auras.damageDelay == 0:
+                    self.quadtree.query(Rect(self.player.x, self.player.y, self.player.auraRadius, self.player.auraRadius), nearby)
+                    for obj in nearby:
+                        if obj.tag == "monster":
+                            if math.sqrt((self.player.x - obj.x)**2 + (self.player.y - obj.y)**2) < self.player.auraRadius/2 + ZOMBIE_SIZE/2:
+                                obj.health -= 5
+
+            # Meteor collision check
+            for meteor in self.player.meteors:
+                if meteor.explodeDelay == 0:
+                    self.quadtree.query(Rect(meteor.x, meteor.y, METEOR_SIZE/2, METEOR_SIZE/2), nearby)
+                    for obj in nearby:
+                        if obj.tag == "monster":
+                            if math.sqrt((meteor.x - obj.x)**2 + (meteor.y - obj.y)**2) < METEOR_SIZE/2 + ZOMBIE_SIZE/2:
+                                obj.health -= 100
+
             # Monster spawn
             if self.spawnLeft <= 0 and self.bossSpawned == False:
                 self.spawnBoss()
@@ -156,7 +180,8 @@ class Game():
                 self.roundDelay -= 1
 
             if self.roundDelay <= 0:
-                self.round += 1
+                if self.round < 10:
+                    self.round += 1
                 self.bossSpawned = False
                 self.spawnLeft = ROUNDS_SPAWNS[self.round-1]
                 self.roundDelay = ROUND_DELAY
@@ -177,8 +202,18 @@ class Game():
                     self.monsters.append(Orc(self))
                 case 4:
                     self.monsters.append(Pig(self))
+                case 5:
+                    self.monsters.append(Knight(self))
+                case 6:
+                    self.monsters.append(WizardA(self))
+                case 7:
+                    self.monsters.append(WizardB(self))
+                case 8:
+                    self.monsters.append(WizardC(self))
+                case 9:
+                    self.monsters.append(Samourai(self))
                 case _:
-                    self.monsters.append(Zombie(self))
+                    self.monsters.append(random.choice([Zombie(self), Skeleton(self), Orc(self), Pig(self), Knight(self), WizardA(self), WizardB(self), WizardC(self), Samourai(self)]))
             if self.spawnLeft != 0:
                 self.spawnLeft -= 1
             self.spawnDelay = SPAWN_DELAY
@@ -198,7 +233,7 @@ class Game():
             case 4:
                 self.monsters.append(PigBig(self))
             case _:
-                self.monsters.append(ZombieBig(self))
+                self.monsters.append(random.choice([ZombieBig(self), SkeletonBig(self), OrcBig(self), PigBig(self)]))
             
 
     def chooseReward(self, reward):
