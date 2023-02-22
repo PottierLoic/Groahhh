@@ -20,8 +20,8 @@ def graphics():
     if quadTreeDisplay:
         game.quadtree.draw(canvas, xoffset, yoffset)
     if game.state == "menu":
-        canvas.create_rectangle(WIDTH/2 - 200, HEIGHT/2 - 100, WIDTH/2 + 200, HEIGHT/2 + 100, fill="grey")
-        canvas.create_text(WIDTH/2, HEIGHT/2, text="", font="Arial 50", fill="black")
+        canvas.create_rectangle(WIDTH/2 - 500, HEIGHT/2 - 100, WIDTH/2 + 500, HEIGHT/2 + 100, fill="grey")
+        canvas.create_text(WIDTH/2, HEIGHT/2, text="Groahhh ! Click to play UwU", font="Arial 50", fill="black")
     elif game.state in ("running", "reward"):
         # Aura display
         if game.player.auras != None:
@@ -165,7 +165,7 @@ def keyReleaseHandler(action):
 
 def click():
     if game.state == "menu":
-        if WIDTH/2 - 200 < mousex < WIDTH/2 + 200 and HEIGHT/2 - 100 < mousey < HEIGHT/2 + 100:
+        if WIDTH/2 - 500 < mousex < WIDTH/2 + 500 and HEIGHT/2 - 100 < mousey < HEIGHT/2 + 100:
             game.start()
     if game.state == "reward":
         if WIDTH/2 - 80 < mousex < WIDTH/2 + 80 and HEIGHT/2 - 120 < mousey < HEIGHT/2 - 40:
@@ -214,7 +214,7 @@ if __name__ == "__main__":
 
     # Tkinter section.
     window = Tk()
-    #window.attributes("-fullscreen", True)
+    window.attributes("-fullscreen", True)
     window.title("Groahhh")
 
     canvas = Canvas(window, bg=BACKGROUND_COLOR, height=HEIGHT, width=WIDTH)

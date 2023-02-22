@@ -69,7 +69,7 @@ class Game():
         """Update the game."""
         if self.state == "running":
             # Position and animation updates
-            self.player.exp += 1
+            self.player.exp += 0.1
             self.player.update()
             for monster in self.monsters:
                 monster.update(self.player)
